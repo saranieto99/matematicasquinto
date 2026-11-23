@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El código secreto · Escape Room Matemático</title>
+<style>
+:root{--navy:#14213d;--blue:#244b78;--gold:#f6bd60;--cream:#fff8e9;--ink:#243047;--green:#27845b;--red:#b94a48;--purple:#7057a3}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:var(--ink);background:radial-gradient(circle at top,#315b83 0,#172b49 55%,#101b30 100%);min-height:100vh}
+button,input{font:inherit}
+button{cursor:pointer}
+.app{max-width:1050px;margin:auto;padding:22px}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#fff;margin-bottom:16px;flex-wrap:wrap}
+.brand{font-weight:900;letter-spacing:.08em;font-size:.9rem}
+.pill{background:#ffffff1c;border:1px solid #ffffff35;border-radius:99px;padding:8px 13px;font-size:.88rem}
+.hero,.panel{background:var(--cream);border:3px solid var(--gold);border-radius:24px;box-shadow:0 18px 50px #0005}
+.hero{padding:clamp(22px,5vw,48px);text-align:center;position:relative;overflow:hidden}
+.eyebrow{color:#92641d;font-weight:800;letter-spacing:.16em;text-transform:uppercase;font-size:.78rem}
+h1{font-size:clamp(2rem,6vw,4rem);line-height:1.03;margin:10px 0;color:var(--navy)}
+.subtitle{font-size:1.1rem;max-width:680px;margin:0 auto 22px;line-height:1.55}
+.treasure{font-size:clamp(4rem,10vw,7rem);margin:12px 0;filter:drop-shadow(0 8px 4px #b88b4233)}
+.primary,.secondary,.answer-btn{border:0;border-radius:13px;padding:13px 20px;font-weight:800;transition:.15s}
+.primary{background:var(--navy);color:#fff;box-shadow:0 4px 0 #091326}
+.primary:hover{transform:translateY(-2px)}
+.secondary{background:#e7dfd0;color:var(--navy)}
+.layout{display:grid;grid-template-columns:250px 1fr;gap:16px;align-items:start}
+.sidebar,.panel{border-radius:20px}
+.sidebar{background:#ffffff12;border:1px solid #ffffff35;color:#fff;padding:16px}
+.sidebar h3{margin:0 0 12px;font-size:1rem}
+.level{padding:10px 11px;border-radius:12px;margin:7px 0;background:#ffffff10;display:flex;gap:9px;align-items:center;font-size:.9rem}
+.level.active{background:var(--gold);color:var(--navy);font-weight:900}
+.level.done{background:#27845b;color:white}
+.level.locked{opacity:.55}
+.level .num{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#ffffff25;font-weight:900;flex:none}
+.progress{height:9px;background:#ffffff30;border-radius:99px;overflow:hidden;margin:12px 0 5px}
+.progress>div{height:100%;width:0;background:var(--gold);transition:.3s}
+.panel{padding:clamp(18px,4vw,32px);min-height:470px}
+.stage-head{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.stage-tag{color:#80561b;font-weight:900;font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+h2{color:var(--navy);font-size:clamp(1.5rem,4vw,2.2rem);margin:8px 0}
+.story{background:#f1e8d7;border-left:5px solid var(--gold);padding:13px 16px;border-radius:10px;line-height:1.5;margin:16px 0}
+.task{font-weight:750;font-size:1.08rem;margin:18px 0 10px}
+.muted{color:#687386;font-size:.92rem}
+.question{background:#fff;border:1px solid #e3d9c8;border-radius:14px;padding:15px;margin:12px 0}
+.question p{margin:0 0 10px;font-weight:750}
+.options{display:flex;flex-wrap:wrap;gap:8px}
+.answer-btn{background:#e9edf3;color:var(--navy);border:2px solid transparent;padding:9px 14px}
+.answer-btn.selected{border-color:var(--blue);background:#dbe8f7}
+.answer-btn.correct{background:#d8f0e3;border-color:var(--green)}
+.answer-btn.wrong{background:#f8dfdc;border-color:var(--red)}
+input[type=text],input[type=number]{width:min(100%,260px);padding:11px 12px;border:2px solid #d7d0c4;border-radius:10px;background:#fff}
+input:focus{outline:3px solid #f6bd6077;border-color:#b8842f}
+.gridnums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.numtile{background:#fff;border:2px solid #e3d9c8;border-radius:11px;padding:12px;text-align:center;font-weight:900;font-size:1.15rem}
+.numtile small{display:block;color:#687386;font-size:.7rem;font-weight:600}
+.feedback{min-height:28px;font-weight:800;margin:12px 0}
+.feedback.good{color:var(--green)}.feedback.bad{color:var(--red)}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.codebox{display:flex;gap:8px;justify-content:center;margin:16px 0}
+.digit{width:42px;height:52px;border-radius:10px;background:#14213d;color:#fff;display:grid;place-items:center;font-size:1.4rem;font-weight:900}
+.lock{font-size:2rem}
+.footer{color:#ffffffaa;text-align:center;font-size:.8rem;margin:18px}
+.hidden{display:none!important}
+.final-code{font-size:clamp(2rem,7vw,3.4rem);font-weight:1000;letter-spacing:.15em;color:var(--green);text-align:center}
+@media(max-width:760px){.layout{grid-template-columns:1fr}.sidebar{order:2}.panel{order:1}.gridnums{grid-template-columns:repeat(2,minmax(0,1fr))}.app{padding:12px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="topbar">
+    <div class="brand">🧭 ACADEMIA DE INVESTIGADORES</div>
+    <div class="pill">MATEMÁTICAS · 5.º DE PRIMARIA</div>
+  </div>
+
+  <section id="intro" class="hero">
+    <div class="eyebrow">Una aventura matemática interactiva</div>
+    <div class="treasure">🗝️</div>
+    <h1>EL CÓDIGO<br>SECRETO</h1>
+    <p class="subtitle">Una cámara misteriosa guarda un tesoro. Para abrirla tendréis que superar cinco misiones sobre números primos y compuestos, divisibilidad y múltiplos.</p>
+    <div class="story" style="max-width:700px;margin:20px auto">
+      «Exploradores: he escondido el tesoro en la cámara de los números. Cada misión os dará una cifra. Reunid las cinco cifras y descubrid el código antes de que se agote el tiempo».
+    </div>
+    <p><strong>Jugad en equipo, hablad las respuestas y comprobad cada reto.</strong></p>
+    <button class="primary" onclick="startGame()">COMENZAR LA AVENTURA ▶</button>
+  </section>
+
+  <section id="game" class="hidden">
+    <div class="layout">
+      <aside class="sidebar">
+        <h3>🗺️ MAPA DE MISIONES</h3>
+        <div id="levelList"></div>
+        <div class="progress"><div id="progressBar"></div></div>
+        <div id="progressText" class="muted" style="color:#ffffffc9">0 de 5 misiones completadas</div>
+        <hr style="border-color:#ffffff30;margin:18px 0">
+        <div>⏱️ Tiempo</div>
+        <div id="timer" style="font-size:1.8rem;font-weight:900">15:00</div>
+        <p class="muted" style="color:#ffffffa8">El cronómetro es orientativo. El docente puede detenerlo.</p>
+        <button class="secondary" style="width:100%;margin-top:8px" onclick="toggleTimer()" id="timerBtn">Pausar tiempo</button>
+      </aside>
+      <main class="panel">
+        <div id="stage"></div>
+      </main>
+    </div>
+  </section>
+  <div class="footer">EL CÓDIGO SECRETO · Resolvedlo juntos. ¡Cada pista cuenta!</div>
+</div>
+<script>
+const missions = [
+ {title:"Detectives de números",tag:"MISIÓN 1 · PRIMOS Y COMPUESTOS",icon:"🔎",story:"La primera puerta solo reconoce los números especiales. Recordad: un número primo tiene exactamente dos divisores; un compuesto tiene más de dos.",code:"4"},
+ {title:"El laboratorio de divisibilidad",tag:"MISIÓN 2 · CRITERIOS DE DIVISIBILIDAD",icon:"🧪",story:"El laboratorio ha mezclado cinco números. Analizad sus cifras y averiguad por cuáles de estos números se pueden dividir exactamente: 2, 3, 5, 9 y 10.",code:"3"},
+ {title:"La fábrica de múltiplos",tag:"MISIÓN 3 · MÚLTIPLOS",icon:"⚙️",story:"La cinta transportadora solo acepta múltiplos de 7. Encontrad los que aparecen en ella y poned la fábrica en marcha.",code:"6"},
+ {title:"Números bajo sospecha",tag:"MISIÓN 4 · RETO DE LÓGICA",icon:"🕵️",story:"Seis números quieren entrar en la cámara. Solo pasarán los que cumplan todas las pistas. Leed con atención: ¡una condición que no se cumple descarta al sospechoso!",code:"4"},
+ {title:"El mensaje oculto",tag:"MISIÓN 5 · RETO FINAL",icon:"📜",story:"Habéis llegado al último pergamino. Descifrad el número misterioso y conseguid la última cifra del código.",code:"0"}
+];
+let completed = [false,false,false,false,false], current=0, seconds=900, timerId=null, timerPaused=false;
+let answers = {};
+function startGame(){document.getElementById('intro').classList.add('hidden');document.getElementById('game').classList.remove('hidden');renderSidebar();renderMission(0);startTimer();}
+function startTimer(){if(timerId)clearInterval(timerId);timerId=setInterval(()=>{if(!timerPaused && seconds>0){seconds--;updateTimer();}},1000);}
+function updateTimer(){let m=String(Math.floor(seconds/60)).padStart(2,'0'),s=String(seconds%60).padStart(2,'0');document.getElementById('timer').textContent=m+':'+s;}
+function toggleTimer(){timerPaused=!timerPaused;document.getElementById('timerBtn').textContent=timerPaused?'Reanudar tiempo':'Pausar tiempo';}
+function renderSidebar(){
+ const list=document.getElementById('levelList');
+ list.innerHTML=missions.map((m,i)=>`<div class="level ${completed[i]?'done':i===current?'active':i>0&&!completed[i-1]?'locked':''}" ${i<=current||completed[i]?'onclick="goTo('+i+')"':''}><span class="num">${completed[i]?'✓':i+1}</span><span>${m.icon} ${m.title}</span></div>`).join('');
+ let n=completed.filter(Boolean).length;document.getElementById('progressBar').style.width=(n*20)+'%';document.getElementById('progressText').textContent=n+' de 5 misiones completadas';
+}
+function goTo(i){if(i===0||completed[i-1]||completed[i]){current=i;renderMission(i);renderSidebar();}}
+function renderMission(i){
+ const m=missions[i];let html=`<div class="stage-head"><div class="stage-tag">${m.tag}</div><div class="lock">${completed[i]?'🔓':'🔒'}</div></div><h2>${m.icon} ${m.title}</h2><div class="story">${m.story}</div>`;
+ if(i===0) html+=mission1();
+ if(i===1) html+=mission2();
+ if(i===2) html+=mission3();
+ if(i===3) html+=mission4();
+ if(i===4) html+=mission5();
+ html+=`<div id="feedback" class="feedback" aria-live="polite"></div><div class="actions"><button class="primary" onclick="checkMission(${i})">${completed[i]?'VOLVER A VER LA PISTA':'COMPROBAR MIS RESPUESTAS'}</button>${completed[i]&&i<4?`<button class="secondary" onclick="goTo(${i+1})">SIGUIENTE MISIÓN →</button>`:''}</div>`;
+ document.getElementById('stage').innerHTML=html;
+}
+function mission1(){return `<p class="task">1. Clasificad los números de la lista.</p><div class="gridnums">${[11,15,17,21,23,27,29,33].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="question"><p>¿Cuántos son números primos?</p><div class="options">${[3,4,5,6].map(n=>opt('m1',n)).join('')}</div></div><div class="question"><p>¿Cuál de estos números es compuesto?</p><div class="options">${[17,19,21,23].map(n=>opt('m1b',n)).join('')}</div></div><p class="muted">Pista: comprobad si cada número tiene divisores distintos de 1 y de sí mismo.</p>`}
+function mission2(){return `<p class="task">2. Completad la tabla: seleccionad SÍ o NO en cada casilla.</p><div class="muted">Cada fila es un número. Elegid si es divisible entre 2, 3, 5, 9 y 10, en ese orden.</div><div id="divTable" style="overflow-x:auto;margin-top:12px"><table style="width:100%;border-collapse:collapse;text-align:center;background:white"><thead><tr>${['Número','÷2','÷3','÷5','÷9','÷10'].map(x=>`<th style="padding:9px;border-bottom:2px solid #d8cdbb">${x}</th>`).join('')}</tr></thead><tbody>${[126,235,540,711,820].map((n,r)=>`<tr><th style="padding:8px;border-bottom:1px solid #eee">${n}</th>${[2,3,5,9,10].map((d,c)=>`<td style="padding:6px;border-bottom:1px solid #eee"><select id="d${r}_${c}" style="padding:7px;border-radius:8px;border:1px solid #ccc"><option value="">—</option><option value="S">Sí</option><option value="N">No</option></select></td>`).join('')}</tr>`).join('')}</tbody></table></div><div class="question"><p>¿Cuántos de los cinco números son divisibles entre 9?</p><div class="options">${[2,3,4,5].map(n=>opt('m2',n)).join('')}</div></div>`}
+function mission3(){return `<p class="task">3. La cinta transportadora contiene estos números:</p><div class="gridnums">${[14,21,25,28,35,39,42,49].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="question"><p>Seleccionad todos los múltiplos de 7 que aparecen.</p><div class="options">${[14,21,25,28,35,39,42,49].map(n=>`<button class="answer-btn" data-group="m3" data-value="${n}" onclick="toggleMulti(this)">${n}</button>`).join('')}</div></div><div class="question"><p>¿Cuántos múltiplos de 7 hay en la cinta?</p><div class="options">${[5,6,7,8].map(n=>opt('m3count',n)).join('')}</div></div><p class="muted">Recordad: los múltiplos se obtienen al multiplicar un número por 1, 2, 3, 4…</p>`}
+function mission4(){return `<p class="task">4. Investigad los seis sospechosos.</p><div class="gridnums">${[12,18,24,30,36,42].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="story"><strong>Las tres pistas:</strong><br>① Es divisible entre 2.<br>② Es divisible entre 3.<br>③ NO es divisible entre 9.</div><div class="question"><p>¿Cuántos números cumplen las tres condiciones?</p><div class="options">${[2,3,4,5].map(n=>opt('m4',n)).join('')}</div></div><div class="question"><p>¿Cuál de estos números NO cumple la tercera pista?</p><div class="options">${[12,24,30,36].map(n=>opt('m4b',n)).join('')}</div></div>`}
+function mission5(){return `<p class="task">5. Resolved el acertijo del pergamino.</p><div class="story">Soy un número de dos cifras.<br>• Soy mayor que 50 y menor que 70.<br>• Soy múltiplo de 10.<br>• Soy divisible entre 2, 3 y 5.<br><strong>¿Qué número soy?</strong></div><div class="question"><p>Escribid el número misterioso:</p><input id="m5num" type="number" min="0" max="99" placeholder="Número"></div><div class="question"><p>¿Cuál es la cifra de las unidades?</p><div class="options">${[0,2,5,6].map(n=>opt('m5unit',n)).join('')}</div></div>`}
+function opt(group,value){let selected=answers[group]===value?'selected':'';return `<button class="answer-btn ${selected}" data-group="${group}" data-value="${value}" onclick="choose(this)">${value}</button>`}
+function choose(btn){let g=btn.dataset.group,v=Number(btn.dataset.value);answers[g]=v;document.querySelectorAll(`[data-group="${g}"]`).forEach(b=>b.classList.toggle('selected',b===btn));}
+function toggleMulti(btn){btn.classList.toggle('selected');}
+function checkMission(i){
+ if(completed[i]){document.getElementById('feedback').textContent='¡Misión superada! Código conseguido: '+missions[i].code;document.getElementById('feedback').className='feedback good';return;}
+ let ok=false, message='';
+ if(i===0){ok=answers.m1===4&&answers.m1b===21;message='Revisad la clasificación: hay cuatro primos y 21 es compuesto.';}
+ if(i===1){
+  let expected=[[ 'S','S','N','N','N'],['N','N','S','N','N'],['S','S','S','S','S'],['N','S','N','N','N'],['S','N','S','N','S']];
+  let tableOK=true;
+  for(let r=0;r<5;r++)for(let c=0;c<5;c++){let el=document.getElementById(`d${r}_${c}`);if(el.value!==expected[r][c])tableOK=false;}
+  ok=tableOK&&answers.m2===3;message='Comprobad todas las casillas de la tabla y contad los números divisibles entre 9: 126, 540 y 711.';
+ }
+ if(i===2){let picked=[...document.querySelectorAll('[data-group="m3"].selected')].map(b=>Number(b.dataset.value)).sort((a,b)=>a-b);let expected=[14,21,28,35,42,49];ok=JSON.stringify(picked)===JSON.stringify(expected)&&answers.m3count===6;message='Los múltiplos son 14, 21, 28, 35, 42 y 49: son seis.';}
+ if(i===3){ok=answers.m4===4&&answers.m4b===36;message='Los números que pasan son 12, 24, 30 y 42. El 36 sí es divisible entre 9.';}
+ if(i===4){ok=Number(document.getElementById('m5num').value)===60&&answers.m5unit===0;message='El número es 60: está entre 50 y 70, es múltiplo de 10 y divisible entre 3.';}
+ const fb=document.getElementById('feedback');
+ if(ok){completed[i]=true;fb.textContent='¡MISIÓN SUPERADA! 🔓 Código conseguido: '+missions[i].code;fb.className='feedback good';renderSidebar();document.querySelector('.lock').textContent='🔓';
+  if(completed.every(Boolean)){setTimeout(showFinal,650);}else{renderMissionKeepFeedback(i);}
+ }else{fb.textContent='Todavía no… '+message;fb.className='feedback bad';}
+}
+function renderMissionKeepFeedback(i){let fb=document.getElementById('feedback');if(fb)fb.textContent='¡MISIÓN SUPERADA! 🔓 Código conseguido: '+missions[i].code;}
+function showFinal(){
+ clearInterval(timerId);
+ document.getElementById('stage').innerHTML=`<div style="text-align:center;padding:15px 0"><div style="font-size:5rem">🏆</div><div class="stage-tag">TODAS LAS MISIONES COMPLETADAS</div><h2>¡EL COFRE SE HA ABIERTO!</h2><p class="subtitle">Habéis demostrado que sois auténticos expertos en números.</p><div class="final-code">4 - 3 - 6 - 4 - 0</div><div class="story">¡Enhorabuena, equipo! Habéis superado los cinco retos matemáticos. El tesoro es vuestro: ¡el conocimiento!</div><button class="primary" onclick="location.reload()">VOLVER A JUGAR ↻</button></div>`;
+}
+</script>
+</body>
+</html>
