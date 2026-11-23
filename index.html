@@ -158,7 +158,17 @@ function checkMission(i){
  if(i===4){ok=Number(document.getElementById('m5num').value)===60&&answers.m5unit===0;message='El número es 60: está entre 50 y 70, es múltiplo de 10 y divisible entre 3.';}
  const fb=document.getElementById('feedback');
  if(ok){completed[i]=true;fb.textContent='¡MISIÓN SUPERADA! 🔓 Código conseguido: '+missions[i].code;fb.className='feedback good';renderSidebar();document.querySelector('.lock').textContent='🔓';
-  if(completed.every(Boolean)){setTimeout(showFinal,650);}else{renderMissionKeepFeedback(i);}
+  if(completed.every(Boolean)){setTimeout(showFinal,650);}else{
+   renderMissionKeepFeedback(i);
+   const actions=document.querySelector('.actions');
+   if(actions && i<4 && !actions.querySelector('.next-mission')){
+     const next=document.createElement('button');
+     next.className='secondary next-mission';
+     next.textContent='SIGUIENTE MISIÓN →';
+     next.onclick=()=>goTo(i+1);
+     actions.appendChild(next);
+   }
+ }
  }else{fb.textContent='Todavía no… '+message;fb.className='feedback bad';}
 }
 function renderMissionKeepFeedback(i){let fb=document.getElementById('feedback');if(fb)fb.textContent='¡MISIÓN SUPERADA! 🔓 Código conseguido: '+missions[i].code;}
