@@ -77,7 +77,7 @@ input:focus{outline:3px solid #f6bd6077;border-color:#b8842f}
     <div class="eyebrow">Una aventura matemática interactiva</div>
     <div class="treasure">🗝️</div>
     <h1>EL CÓDIGO<br>SECRETO</h1>
-    <p class="subtitle">Una cámara misteriosa guarda un tesoro. Para abrirla tendréis que superar cinco misiones sobre números primos y compuestos, divisibilidad y múltiplos.</p>
+    <p class="subtitle">Una cámara misteriosa guarda un tesoro. Para abrirla tendréis que superar ocho misiones sobre números primos y compuestos, divisibilidad y múltiplos.</p>
     <div class="story" style="max-width:700px;margin:20px auto">
       «Exploradores: he escondido el tesoro en la cámara de los números. Cada misión os dará una cifra. Reunid las cinco cifras y descubrid el código antes de que se agote el tiempo».
     </div>
@@ -91,10 +91,10 @@ input:focus{outline:3px solid #f6bd6077;border-color:#b8842f}
         <h3>🗺️ MAPA DE MISIONES</h3>
         <div id="levelList"></div>
         <div class="progress"><div id="progressBar"></div></div>
-        <div id="progressText" class="muted" style="color:#ffffffc9">0 de 5 misiones completadas</div>
+        <div id="progressText" class="muted" style="color:#ffffffc9">0 de 8 misiones completadas</div>
         <hr style="border-color:#ffffff30;margin:18px 0">
         <div>⏱️ Tiempo</div>
-        <div id="timer" style="font-size:1.8rem;font-weight:900">15:00</div>
+        <div id="timer" style="font-size:1.8rem;font-weight:900">20:00</div>
         <p class="muted" style="color:#ffffffa8">El cronómetro es orientativo. El docente puede detenerlo.</p>
         <button class="secondary" style="width:100%;margin-top:8px" onclick="toggleTimer()" id="timerBtn">Pausar tiempo</button>
       </aside>
@@ -111,9 +111,12 @@ const missions = [
  {title:"El laboratorio de divisibilidad",tag:"MISIÓN 2 · CRITERIOS DE DIVISIBILIDAD",icon:"🧪",story:"El laboratorio ha mezclado cinco números. Analizad sus cifras y averiguad por cuáles de estos números se pueden dividir exactamente: 2, 3, 5, 9 y 10.",code:"3"},
  {title:"La fábrica de múltiplos",tag:"MISIÓN 3 · MÚLTIPLOS",icon:"⚙️",story:"La cinta transportadora solo acepta múltiplos de 7. Encontrad los que aparecen en ella y poned la fábrica en marcha.",code:"6"},
  {title:"Números bajo sospecha",tag:"MISIÓN 4 · RETO DE LÓGICA",icon:"🕵️",story:"Seis números quieren entrar en la cámara. Solo pasarán los que cumplan todas las pistas. Leed con atención: ¡una condición que no se cumple descarta al sospechoso!",code:"4"},
- {title:"El mensaje oculto",tag:"MISIÓN 5 · RETO FINAL",icon:"📜",story:"Habéis llegado al último pergamino. Descifrad el número misterioso y conseguid la última cifra del código.",code:"0"}
+ {title:"El mensaje oculto",tag:"MISIÓN 5 · RETO DE PISTAS",icon:"📜",story:"Habéis llegado a un pergamino con pistas. Descifrad el número misterioso.",code:"0"},
+ {title:"El escáner de divisibilidad",tag:"MISIÓN 6 · CRITERIOS DE DIVISIBILIDAD",icon:"🛰️",story:"El escáner de la cámara solo detecta números pares. Seleccionad los números divisibles entre 2 y averiguad cuántos hay.",code:"3"},
+ {title:"La ruta de los múltiplos",tag:"MISIÓN 7 · MÚLTIPLOS Y TABLAS",icon:"🧩",story:"Para cruzar el puente hay que reconocer los múltiplos de 6. Después tendréis que encontrar el primer múltiplo común de 4 y 6 que aparece en la lista.",code:"5"},
+ {title:"El último guardián",tag:"MISIÓN 8 · DESAFÍO FINAL",icon:"🛡️",story:"El guardián protege el tesoro con una última adivinanza. Usad los criterios de divisibilidad para descubrir su número.",code:"5"}
 ];
-let completed = [false,false,false,false,false], current=0, seconds=900, timerId=null, timerPaused=false;
+let completed = Array(8).fill(false), current=0, seconds=1200, timerId=null, timerPaused=false;
 let answers = {};
 function startGame(){document.getElementById('intro').classList.add('hidden');document.getElementById('game').classList.remove('hidden');renderSidebar();renderMission(0);startTimer();}
 function startTimer(){if(timerId)clearInterval(timerId);timerId=setInterval(()=>{if(!timerPaused && seconds>0){seconds--;updateTimer();}},1000);}
@@ -122,7 +125,7 @@ function toggleTimer(){timerPaused=!timerPaused;document.getElementById('timerBt
 function renderSidebar(){
  const list=document.getElementById('levelList');
  list.innerHTML=missions.map((m,i)=>`<div class="level ${completed[i]?'done':i===current?'active':i>0&&!completed[i-1]?'locked':''}" ${i<=current||completed[i]?'onclick="goTo('+i+')"':''}><span class="num">${completed[i]?'✓':i+1}</span><span>${m.icon} ${m.title}</span></div>`).join('');
- let n=completed.filter(Boolean).length;document.getElementById('progressBar').style.width=(n*20)+'%';document.getElementById('progressText').textContent=n+' de 5 misiones completadas';
+ let n=completed.filter(Boolean).length;document.getElementById('progressBar').style.width=(n/8*100)+'%';document.getElementById('progressText').textContent=n+' de 8 misiones completadas';
 }
 function goTo(i){if(i===0||completed[i-1]||completed[i]){current=i;renderMission(i);renderSidebar();}}
 function renderMission(i){
@@ -132,6 +135,9 @@ function renderMission(i){
  if(i===2) html+=mission3();
  if(i===3) html+=mission4();
  if(i===4) html+=mission5();
+ if(i===5) html+=mission6();
+ if(i===6) html+=mission7();
+ if(i===7) html+=mission8();
  html+=`<div id="feedback" class="feedback" aria-live="polite"></div><div class="actions"><button class="primary" onclick="checkMission(${i})">${completed[i]?'VOLVER A VER LA PISTA':'COMPROBAR MIS RESPUESTAS'}</button>${completed[i]&&i<4?`<button class="secondary" onclick="goTo(${i+1})">SIGUIENTE MISIÓN →</button>`:''}</div>`;
  document.getElementById('stage').innerHTML=html;
 }
@@ -140,6 +146,9 @@ function mission2(){return `<p class="task">2. Completad la tabla: seleccionad S
 function mission3(){return `<p class="task">3. La cinta transportadora contiene estos números:</p><div class="gridnums">${[14,21,25,28,35,39,42,49].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="question"><p>Seleccionad todos los múltiplos de 7 que aparecen.</p><div class="options">${[14,21,25,28,35,39,42,49].map(n=>`<button class="answer-btn" data-group="m3" data-value="${n}" onclick="toggleMulti(this)">${n}</button>`).join('')}</div></div><div class="question"><p>¿Cuántos múltiplos de 7 hay en la cinta?</p><div class="options">${[5,6,7,8].map(n=>opt('m3count',n)).join('')}</div></div><p class="muted">Recordad: los múltiplos se obtienen al multiplicar un número por 1, 2, 3, 4…</p>`}
 function mission4(){return `<p class="task">4. Investigad los seis sospechosos.</p><div class="gridnums">${[12,18,24,30,36,42].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="story"><strong>Las tres pistas:</strong><br>① Es divisible entre 2.<br>② Es divisible entre 3.<br>③ NO es divisible entre 9.</div><div class="question"><p>¿Cuántos números cumplen las tres condiciones?</p><div class="options">${[2,3,4,5].map(n=>opt('m4',n)).join('')}</div></div><div class="question"><p>¿Cuál de estos números NO cumple la tercera pista?</p><div class="options">${[12,24,30,36].map(n=>opt('m4b',n)).join('')}</div></div>`}
 function mission5(){return `<p class="task">5. Resolved el acertijo del pergamino.</p><div class="story">Soy un número de dos cifras.<br>• Soy mayor que 50 y menor que 70.<br>• Soy múltiplo de 10.<br>• Soy divisible entre 2, 3 y 5.<br><strong>¿Qué número soy?</strong></div><div class="question"><p>Escribid el número misterioso:</p><input id="m5num" type="number" min="0" max="99" placeholder="Número"></div><div class="question"><p>¿Cuál es la cifra de las unidades?</p><div class="options">${[0,2,5,6].map(n=>opt('m5unit',n)).join('')}</div></div>`}
+function mission6(){return `<p class="task">6. El escáner muestra estos números:</p><div class="gridnums">${[32,45,60,73,90,101].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="question"><p>Seleccionad todos los números divisibles entre 2.</p><div class="options">${[32,45,60,73,90,101].map(n=>`<button class="answer-btn" data-group="m6" data-value="${n}" onclick="toggleMulti(this)">${n}</button>`).join('')}</div></div><div class="question"><p>¿Cuántos números habéis seleccionado?</p><div class="options">${[2,3,4,5].map(n=>opt('m6count',n)).join('')}</div></div><p class="muted">Pista: los números divisibles entre 2 terminan en 0, 2, 4, 6 u 8.</p>`}
+function mission7(){return `<p class="task">7. La ruta del puente está formada por estos números:</p><div class="gridnums">${[12,18,20,24,30,35,36].map(n=>`<div class="numtile">${n}</div>`).join('')}</div><div class="question"><p>¿Cuántos múltiplos de 6 aparecen en la lista?</p><div class="options">${[3,4,5,6].map(n=>opt('m7count',n)).join('')}</div></div><div class="question"><p>¿Cuál es el menor número de la lista que es múltiplo de 4 y de 6?</p><div class="options">${[12,18,24,36].map(n=>opt('m7common',n)).join('')}</div></div><p class="muted">Pista: un múltiplo común pertenece a las tablas de los dos números.</p>`}
+function mission8(){return `<p class="task">8. Descubrid el número secreto del guardián.</p><div class="story">Soy un número de dos cifras.<br>• Soy mayor que 40 y menor que 60.<br>• Soy divisible entre 3 y entre 5.<br>• NO soy divisible entre 2.<br><strong>¿Qué número soy?</strong></div><div class="question"><p>Escribid el número secreto:</p><input id="m8num" type="number" min="0" max="99" placeholder="Número"></div><div class="question"><p>¿Cuál es la cifra de las unidades?</p><div class="options">${[0,3,5,8].map(n=>opt('m8unit',n)).join('')}</div></div>`}
 function opt(group,value){let selected=answers[group]===value?'selected':'';return `<button class="answer-btn ${selected}" data-group="${group}" data-value="${value}" onclick="choose(this)">${value}</button>`}
 function choose(btn){let g=btn.dataset.group,v=Number(btn.dataset.value);answers[g]=v;document.querySelectorAll(`[data-group="${g}"]`).forEach(b=>b.classList.toggle('selected',b===btn));}
 function toggleMulti(btn){btn.classList.toggle('selected');}
@@ -148,7 +157,7 @@ function checkMission(i){
  let ok=false, message='';
  if(i===0){ok=answers.m1===4&&answers.m1b===21;message='Revisad la clasificación: hay cuatro primos y 21 es compuesto.';}
  if(i===1){
-  let expected=[[ 'S','S','N','N','N'],['N','N','S','N','N'],['S','S','S','S','S'],['N','S','N','N','N'],['S','N','S','N','S']];
+  let expected=[[ 'S','S','N','S','N'],['N','N','S','N','N'],['S','S','S','S','S'],['N','S','N','S','N'],['S','N','S','N','S']];
   let tableOK=true;
   for(let r=0;r<5;r++)for(let c=0;c<5;c++){let el=document.getElementById(`d${r}_${c}`);if(el.value!==expected[r][c])tableOK=false;}
   ok=tableOK&&answers.m2===3;message='Comprobad todas las casillas de la tabla y contad los números divisibles entre 9: 126, 540 y 711.';
@@ -156,12 +165,15 @@ function checkMission(i){
  if(i===2){let picked=[...document.querySelectorAll('[data-group="m3"].selected')].map(b=>Number(b.dataset.value)).sort((a,b)=>a-b);let expected=[14,21,28,35,42,49];ok=JSON.stringify(picked)===JSON.stringify(expected)&&answers.m3count===6;message='Los múltiplos son 14, 21, 28, 35, 42 y 49: son seis.';}
  if(i===3){ok=answers.m4===4&&answers.m4b===36;message='Los números que pasan son 12, 24, 30 y 42. El 36 sí es divisible entre 9.';}
  if(i===4){ok=Number(document.getElementById('m5num').value)===60&&answers.m5unit===0;message='El número es 60: está entre 50 y 70, es múltiplo de 10 y divisible entre 3.';}
+ if(i===5){let picked=[...document.querySelectorAll('[data-group="m6"].selected')].map(b=>Number(b.dataset.value)).sort((a,b)=>a-b);ok=JSON.stringify(picked)==='[32,60,90]'&&answers.m6count===3;message='Los números pares son 32, 60 y 90: hay tres.';}
+ if(i===6){ok=answers.m7count===5&&answers.m7common===12;message='Los múltiplos de 6 son 12, 18, 24, 30 y 36. El menor múltiplo común de 4 y 6 en la lista es 12.';}
+ if(i===7){ok=Number(document.getElementById('m8num').value)===45&&answers.m8unit===5;message='El número es 45: está entre 40 y 60, es divisible entre 3 y 5, y no es par.';}
  const fb=document.getElementById('feedback');
  if(ok){completed[i]=true;fb.textContent='¡MISIÓN SUPERADA! 🔓 Código conseguido: '+missions[i].code;fb.className='feedback good';renderSidebar();document.querySelector('.lock').textContent='🔓';
   if(completed.every(Boolean)){setTimeout(showFinal,650);}else{
    renderMissionKeepFeedback(i);
    const actions=document.querySelector('.actions');
-   if(actions && i<4 && !actions.querySelector('.next-mission')){
+   if(actions && i<7 && !actions.querySelector('.next-mission')){
      const next=document.createElement('button');
      next.className='secondary next-mission';
      next.textContent='SIGUIENTE MISIÓN →';
@@ -174,7 +186,7 @@ function checkMission(i){
 function renderMissionKeepFeedback(i){let fb=document.getElementById('feedback');if(fb)fb.textContent='¡MISIÓN SUPERADA! 🔓 Código conseguido: '+missions[i].code;}
 function showFinal(){
  clearInterval(timerId);
- document.getElementById('stage').innerHTML=`<div style="text-align:center;padding:15px 0"><div style="font-size:5rem">🏆</div><div class="stage-tag">TODAS LAS MISIONES COMPLETADAS</div><h2>¡EL COFRE SE HA ABIERTO!</h2><p class="subtitle">Habéis demostrado que sois auténticos expertos en números.</p><div class="final-code">4 - 3 - 6 - 4 - 0</div><div class="story">¡Enhorabuena, equipo! Habéis superado los cinco retos matemáticos. El tesoro es vuestro: ¡el conocimiento!</div><button class="primary" onclick="location.reload()">VOLVER A JUGAR ↻</button></div>`;
+ document.getElementById('stage').innerHTML=`<div style="text-align:center;padding:15px 0"><div style="font-size:5rem">🏆</div><div class="stage-tag">TODAS LAS MISIONES COMPLETADAS</div><h2>¡EL COFRE SE HA ABIERTO!</h2><p class="subtitle">Habéis demostrado que sois auténticos expertos en números.</p><div class="final-code">4 - 3 - 6 - 4 - 0 - 3 - 5 - 5</div><div class="story">¡Enhorabuena, equipo! Habéis superado los ocho retos matemáticos. El tesoro es vuestro: ¡el conocimiento!</div><button class="primary" onclick="location.reload()">VOLVER A JUGAR ↻</button></div>`;
 }
 </script>
 </body>
